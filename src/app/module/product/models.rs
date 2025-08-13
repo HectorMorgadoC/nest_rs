@@ -41,9 +41,6 @@ pub(crate) mod model {
         };
         use std::pin::Pin;
         use std::future::Future;
-        
-        use crate::app::shared::error::error::error::AppError;
-        
         use super::schemac::product;
 
         #[derive(Queryable, Selectable,Debug,Serialize,Deserialize,Validate,Insertable,AsChangeset,Default,)]
@@ -79,30 +76,34 @@ pub(crate) mod model {
 
         #[derive(Debug)]
         pub struct ValidatedProduct(Product);
+        use crate::app::shared::common::message_detail::message_detail::ProblemDetails;
         
         impl FromRequest for ValidatedProduct {
-            type Error = AppError;
+            type Error = ProblemDetails;
             type Future = Pin<Box<dyn Future<Output = Result<Self, Self::Error>>>>;
-        
+
+
             fn from_request(req: &HttpRequest, payload: &mut actix_web::dev::Payload) -> Self::Future {
                 let json_future = Json::<Product>::from_request(req, payload);
                 let uri = req.uri().to_string();
                 
                 Box::pin(async move {
-                    let product = json_future
+                    let json_product = json_future
                         .await
-                        .map_err(|e| AppError::ValidationError(
-                            format!("Invalid JSON format: {}", e)
-                        ))?
-                        .into_inner();
-                    
-                    // Validar usando validator
-                    product.validate()
-                        .map_err(|validation_errors| {
-                            AppError::ValidationError(format!("{} :{}",validation_errors, &uri))
+                        .map_err(|e| {
+                            ProblemDetails::bad_request(uri.clone(), e.to_string())
                         })?;
+
+                    let product = json_product.into_inner();
+
+
+                     // Validar con validator
+                    if let Err(validation_errors) = product.validate() {
+                            return Err(ProblemDetails::unprocesable_entity(uri, validation_errors.to_string()));
+                    }
                     
-                    Ok(ValidatedProduct(product))
+                            Ok(ValidatedProduct(product))
+                                                           // Validar usando validator
                 })
             }
         }
