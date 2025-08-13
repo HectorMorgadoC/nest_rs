@@ -55,7 +55,7 @@ pub(crate) mod model {
             #[validate(length(min = 3,max = 50))]
             pub slug: String,
             #[validate(range(min = 0.0))]
-            pub price: f32,
+            pub price: f64,
             #[validate(range(min = 0))]
             pub stock: i32,
             pub images: Vec<String>,

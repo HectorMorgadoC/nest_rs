@@ -6,12 +6,11 @@ pub(crate) mod handler {
 
     use super::super::models::model::dto::Product;
     
-    pub async fn get_all_products(service: web::Data<Service>) -> impl Responder {
+    pub async fn get_all_products(service: web::Data<Service>) -> Result<impl Responder,ProblemDetails> {
+        println!("Peticion a GET: /product");
         match service.get_all().await {
-            Ok(products) => HttpResponse::Ok().json(products),
-            Err(err) => HttpResponse::InternalServerError().json(
-                ProblemDetails::not_found("/product".to_string())
-            ),
+            Ok(products) => Ok(HttpResponse::Ok().json(products)),
+            Err(err) => Err(err)
         }
     }
     

@@ -23,8 +23,8 @@ pub(crate) mod service {
         pub(crate) async fn get_all(&self) -> Result<Vec<Product>,ProblemDetails> {
             match self.repository.get_all() {
                 Ok(products) => {
-                    let product_size = products.length(); 
-                    if let Some(_) = product_size {
+                    let product_size = products.len(); 
+                    if product_size > 0 {
                         Ok(products)
                     } else {
                         Err(ProblemDetails::not_found("/product".to_string()))
@@ -40,8 +40,8 @@ pub(crate) mod service {
         pub(crate) async fn get_by_id(&mut self, id: Uuid) -> Result<Vec<Product>,ProblemDetails> {
             match self.repository.get_by_id(id){
                 Ok(products) => {
-                    let product_size = products.length(); 
-                    if let Some(_) = product_size {
+                    let product_size = products.len(); 
+                    if product_size > 0 {
                         Ok(products)
                     } else {
                         Err(ProblemDetails::not_found("/product/id".to_string()))

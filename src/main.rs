@@ -22,7 +22,7 @@ async fn main() -> io::Result<()> {
         App::new()
             .app_data(app_data.clone())
             .configure(configure_routes)
-            .configure(configure_providers)
+            .configure(|cfg| configure_providers(cfg, app_data.clone()))
     });
 
     println!("server running port: {env_port}");
