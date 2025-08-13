@@ -11,7 +11,7 @@ diesel::table! {
         #[max_length = 50]
         slug -> Nullable<Varchar>,
         stock -> Int4,
-        sizes -> Nullable<Array<Nullable<Text>>>,
+        images -> Nullable<Array<Nullable<Text>>>,
         #[max_length = 50]
         gender -> Nullable<Varchar>,
     }
