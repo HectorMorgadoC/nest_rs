@@ -6,7 +6,7 @@ pub(crate) mod route {
         cfg
             .route("/product",web::get().to(get_all_products))
             .route("/product/{id}",web::get().to(get_by_id_product))
-            .route("/product/{id}",web::patch().to(update_product))
+            .route("/product/{id}",web::put().to(update_product))
             .route("/product",web::post().to(create_product))
             .route("/product/{id}",web::delete().to(delete_product));
         }

@@ -1,4 +1,5 @@
 mod app;
+mod schema;
 use actix_web::{App,HttpServer,web};
 use std::io;
 use app::shared::database::diesel::diesel::connection;

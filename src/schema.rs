@@ -2,24 +2,23 @@
 
 diesel::table! {
     product (id) {
-        id -> Uuid,
+        id -> Nullable<Uuid>,
         #[max_length = 50]
         title -> Varchar,
-        price -> Float8,
+        price -> Float4,
         #[max_length = 200]
         description -> Varchar,
         #[max_length = 50]
-        slug -> Nullable<Varchar>,
+        slug -> Varchar,
         stock -> Int4,
-        images -> Nullable<Array<Nullable<Text>>>,
         #[max_length = 50]
-        gender -> Nullable<Varchar>,
+        gender -> Varchar,
     }
 }
 
 diesel::table! {
     product_image (id) {
-        id -> Uuid,
+        id -> Nullable<Uuid>,
         #[max_length = 200]
         url -> Varchar,
         product_id -> Uuid,
