@@ -5,6 +5,7 @@ use crate::app::{
     module::{configure_providers, configure_routes},
     shared::state::state::state::AppState,
 };
+use actix_files::Files;
 use actix_web::{App, HttpServer, web};
 use app::shared::database::diesel::diesel::connection;
 use std::io;
@@ -22,6 +23,7 @@ async fn main() -> io::Result<()> {
     let server = HttpServer::new(move || {
         App::new()
             .app_data(app_data.clone())
+            .service(Files::new("upload", "./static/upload").show_files_listing())
             .configure(configure_routes)
             .configure(|cfg| configure_providers(cfg, app_data.clone()))
     });

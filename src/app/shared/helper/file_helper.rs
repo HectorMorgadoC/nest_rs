@@ -1,14 +1,15 @@
 pub mod file_filter {
 
-    use std::{fmt::format, io::Write};
-
     use actix_multipart::Multipart;
     use actix_web::{Error, HttpResponse, web};
     use futures_util::TryStreamExt;
+    use std::{fs::File, io::Write};
+    use uuid::Uuid;
 
     pub async fn load_file(mut payload: Multipart) -> Result<HttpResponse, Error> {
         std::fs::create_dir_all("./static/upload")?;
         let mut is_right_type = false;
+        let mut url_response_image = String::new();
 
         while let Some(mut field) = payload.try_next().await? {
             let content_type = field.content_type();
@@ -35,20 +36,43 @@ pub mod file_filter {
             };
 
             if let Some(file_name) = field.content_disposition().expect("REASON").get_filename() {
-                let file_path = format!("./static/upload/{file_name}");
+                let new_file_name = file_name_helper(file_name);
+                url_response_image.push_str(&new_file_name);
+                let file_path = format!("./static/upload/{}", &new_file_name);
                 println!("Saving: {}", file_path.clone());
 
-                let mut archivo = web::block(move || std::fs::File::create(&file_path)).await??;
+                let mut file = web::block(move || std::fs::File::create(&file_path)).await??;
 
                 while let Some(chunk) = field.try_next().await? {
-                    archivo =
-                        web::block(move || archivo.write_all(&chunk).map(|_| archivo)).await??;
+                    file = web::block(move || file.write_all(&chunk).map(|_| file)).await??;
                 }
 
                 println!("Saved file");
             }
         }
 
-        Ok(HttpResponse::Ok().body("File saved successfully"))
+        Ok(HttpResponse::Ok().body(format!(
+            "http://localhost:3000/static/upload/{url_response_image}"
+        )))
+    }
+
+    fn file_name_helper(file_name: &str) -> String {
+        let mut uuid = Uuid::new_v4();
+        let extension: Vec<&str> = file_name.split(".").collect();
+
+        while true {
+            let uuid_in_data = File::open(format!(
+                "./static/upload/{uuid}.{:?}",
+                extension.last().map_or("---", |v| v)
+            ));
+
+            if uuid_in_data.is_ok() {
+                uuid = Uuid::new_v4();
+            } else {
+                break;
+            }
+        }
+
+        format!("{}.{}", uuid, extension.last().unwrap())
     }
 }
