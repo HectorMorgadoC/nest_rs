@@ -1,4 +1,4 @@
-pub mod validation {
+pub mod validation_request {
     use crate::app::shared::common::http_error::http_error::ProblemDetails;
     use actix_web::{FromRequest, HttpRequest, web::Json};
     use serde::de::DeserializeOwned;
@@ -11,10 +11,10 @@ pub mod validation {
     pub struct ValidatedRequest<T>(pub T);
 
     impl<T> ValidatedRequest<T> {
-        /// Extract the inner validated value
-        pub fn into_inner(self) -> T {
-            self.0
-        }
+        // Extract the inner validated value
+        //pub fn into_inner(self) -> T {
+        //    self.0
+        //}
     }
 
     impl<T> std::ops::Deref for ValidatedRequest<T> {
@@ -33,9 +33,9 @@ pub mod validation {
         type Future = Pin<Box<dyn Future<Output = Result<Self, Self::Error>>>>;
 
         fn from_request(req: &HttpRequest, payload: &mut actix_web::dev::Payload) -> Self::Future {
+            println!("{:?}", req.clone());
             let json_future = Json::<T>::from_request(req, payload);
-            let uri = req.uri().to_string();
-
+            //let uri = req.uri().to_string();
             Box::pin(async move {
                 // Extract JSON payload
                 let json_result = json_future.await;

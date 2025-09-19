@@ -7,7 +7,7 @@ pub(crate) mod handler {
     };
     use crate::app::shared::{
         api::api_request::api_request::DataRequest,
-        validation::validation::validation::ValidatedRequest,
+        validation::validation::validation_request::ValidatedRequest,
     };
     use actix_web::{HttpResponse, web};
     use uuid::Uuid;

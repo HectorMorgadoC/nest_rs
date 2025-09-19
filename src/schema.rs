@@ -25,9 +25,20 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    user_auth (id) {
+        id -> Nullable<Uuid>,
+        #[max_length = 30]
+        email -> Varchar,
+        #[max_length = 60]
+        password -> Varchar,
+        #[max_length = 50]
+        fullname -> Varchar,
+        is_active -> Bool,
+        roles -> Array<Varchar>,
+    }
+}
+
 diesel::joinable!(product_image -> product (product_id));
 
-diesel::allow_tables_to_appear_in_same_query!(
-    product,
-    product_image,
-);
+diesel::allow_tables_to_appear_in_same_query!(product, product_image, user_auth,);
