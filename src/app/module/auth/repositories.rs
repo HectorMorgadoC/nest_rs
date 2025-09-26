@@ -8,6 +8,7 @@ pub(crate) mod repository {
 
     use crate::schema::user_auth::dsl::*;
 
+    #[derive(Clone)]
     pub struct Repository {
         connection: DBPool,
     }
@@ -29,7 +30,7 @@ pub(crate) mod repository {
                 .execute(&mut connection)
         }
 
-        pub fn get(&self, _email: String) -> Result<Vec<User>, error> {
+        pub fn get_by_email(&self, _email: String) -> Result<Vec<User>, error> {
             let mut connection = self.connection.get().map_err(|e| {
                 diesel::result::Error::DatabaseError(
                     diesel::result::DatabaseErrorKind::UnableToSendCommand,

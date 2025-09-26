@@ -4,6 +4,7 @@ pub(crate) mod route {
     use super::super::handlers::handler::*;
 
     pub fn configure_router(cfg: &mut web::ServiceConfig) {
-        cfg.route("/auth", web::post().to(create_user));
+        cfg.route("/auth", web::post().to(create_user))
+            .route("/login", web::post().to(login));
     }
 }

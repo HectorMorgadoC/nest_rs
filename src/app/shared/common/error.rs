@@ -35,6 +35,9 @@ pub mod app_error {
         #[error("Invalid issuer: expected {expected}, got {actual}")]
         InvalidIssuer { expected: String, actual: String },
 
+        #[error("Unauthorized: {message_error}")]
+        Unauthorized { message_error: String },
+
         #[error("Internal server error: {0}")]
         InternalError(String),
     }

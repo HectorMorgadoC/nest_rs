@@ -1,5 +1,6 @@
 pub mod api;
 pub mod common;
+pub mod contract;
 pub mod database;
 pub mod helper;
 pub mod middleware;
