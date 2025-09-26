@@ -28,7 +28,7 @@ pub mod json_web_token {
         #[serde(rename = "iss")]
         issuer: String,
         #[serde(rename = "sub")]
-        subject: String,
+        pub subject: String,
         #[serde(rename = "exp")]
         expiration: usize,
         #[serde(rename = "iat")]
@@ -153,12 +153,9 @@ pub mod json_web_token {
 
         if let Some(_key) = key {
             let decoding_key = DecodingKey::from_secret(_key.as_ref());
-            let validation_token = decode::<Claims>(credential.token(), &decoding_key, &validation);
+            let token_data = decode::<Claims>(credential.token(), &decoding_key, &validation);
 
-            if let Ok(value) = &validation_token {
-                println!("{:?}", value);
-            }
-            if validation_token.is_err() {
+            if token_data.is_err() {
                 return Err((
                     ProblemDetails::unauthorized("Invalid token".to_string()).into(),
                     request,

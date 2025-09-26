@@ -4,7 +4,7 @@ pub mod contract {
 
     #[async_trait::async_trait]
     pub trait MiddlewareUserValidator {
-        async fn validate_user_for_middleware(
+        async fn validate_user_role_for_middleware(
             &self,
             _email: String,
         ) -> Result<MiddlewareUserContext, ProblemDetails>;
