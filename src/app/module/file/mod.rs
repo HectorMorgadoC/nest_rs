@@ -1,4 +1,3 @@
-use crate::app::shared::state::state::state::AppState;
 use actix_web::web;
 
 use super::super::module::file::routes::route;

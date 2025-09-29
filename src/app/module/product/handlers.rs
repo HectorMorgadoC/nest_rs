@@ -14,7 +14,7 @@ pub(crate) mod handler {
 
     pub async fn get_all_products(service: web::Data<Services>) -> HttpResult<HttpResponse> {
         println!("GET: /product");
-        let products = service.get_all().await?;
+        let products = service.get().await?;
         //match service.get_all().await {
         //    Ok(products) => HttpResponse::Ok().json(products),
         //    Err(err) => err.error_response()

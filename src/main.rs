@@ -3,11 +3,15 @@ mod schema;
 use crate::app::config::env::env::Env;
 use crate::app::{
     module::{configure_providers, configure_routes},
-    shared::state::state::state::AppState,
+    shared::state::state::app_state::AppState,
 };
 use actix_files::Files;
 use actix_web::{App, HttpServer, web};
-use app::shared::database::diesel::diesel::connection;
+use app::shared::database::{
+    diesel::diesel::connection as connection_diesel,
+    sqlx_mysql::sqlx::connection as connection_sqlx,
+};
+
 use std::io;
 
 #[actix_web::main]
@@ -15,11 +19,15 @@ async fn main() -> io::Result<()> {
     let var_env = Env::init();
     let env_port: u16 = var_env.get_parsed("PORT").unwrap_or_else(|| 3000);
     let env_address: &str = &var_env.get_or("ADDRESS", "127.0.0.1");
-    let url_database = var_env.get("DATABASE_URL").unwrap();
-    let database_connection = connection(&url_database);
+    let url_database_diesel = var_env.get("DATABASE_URL").unwrap();
+    let url_database_sqlx = var_env.get("DATABASE_URL_MYSQL").unwrap();
+    let database_connection_diesel = connection_diesel(url_database_diesel);
+    let database_connection_sqlx = connection_sqlx(url_database_sqlx).await;
     let app_data = web::Data::new(AppState {
-        db: database_connection,
+        database_diesel: database_connection_diesel,
+        database_sqlx: database_connection_sqlx,
     });
+
     let server = HttpServer::new(move || {
         App::new()
             .app_data(app_data.clone())

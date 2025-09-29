@@ -1,7 +1,7 @@
 pub(crate) mod route {
     use super::super::handlers::handler::*;
     use crate::app::shared::middleware::{
-        authentication::json_web_token::validator, validate::validate_role::validate_role_admin,
+        authentication::json_web_token::validator, validate::validate_role::role_validator,
     };
     use actix_web::web;
     use actix_web_httpauth::middleware::HttpAuthentication;
@@ -10,7 +10,10 @@ pub(crate) mod route {
         cfg.service(
             web::scope("/product")
                 .wrap(HttpAuthentication::bearer(validator))
-                .wrap(HttpAuthentication::bearer(validate_role_admin))
+                .wrap(HttpAuthentication::bearer(role_validator(vec![
+                    "admin".to_string(),
+                    "operator".to_string(),
+                ])))
                 .route("", web::get().to(get_all_products))
                 .route("/{id}", web::get().to(get_by_id_product))
                 .route("/{id}", web::put().to(update_product))

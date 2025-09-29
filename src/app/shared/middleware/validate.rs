@@ -12,9 +12,26 @@ pub mod validate_role {
     use actix_web::{Error, dev::ServiceRequest, web};
     use actix_web_httpauth::extractors::bearer::BearerAuth;
     use jsonwebtoken::{Algorithm, DecodingKey, Validation, decode};
-    use std::sync::Arc;
+    use std::{pin::Pin, sync::Arc};
 
-    pub async fn validate_role_admin(
+    pub fn role_validator(
+        required_roles: Vec<String>,
+    ) -> impl Fn(
+        ServiceRequest,
+        BearerAuth,
+    ) -> Pin<
+        Box<dyn Future<Output = Result<ServiceRequest, (actix_web::Error, ServiceRequest)>>>,
+    > {
+        move |request: ServiceRequest, credentials: BearerAuth| {
+            let required_roles = required_roles.clone();
+            Box::pin(async move {
+                validate_role_internal(required_roles.clone(), request, credentials).await
+            })
+        }
+    }
+
+    pub async fn validate_role_internal(
+        required_roles: Vec<String>,
         request: ServiceRequest,
         credentials: BearerAuth,
     ) -> Result<ServiceRequest, (actix_web::Error, ServiceRequest)> {
@@ -43,7 +60,7 @@ pub mod validate_role {
                         let context_roles = context.roles;
 
                         for role in context_roles {
-                            if role == "admin" {
+                            if required_roles.contains(&role) {
                                 return Ok(request);
                             }
                         }
@@ -57,25 +74,6 @@ pub mod validate_role {
                 }
             }
         }
-
-        /*
-        // Usar trait para validar usuario
-        match validator
-            .validate_user_role_for_middleware(claims.user_identifier)
-            .await
-        {
-            Ok(user_context) => {
-                request.extensions_mut().insert(user_context);
-                request.extensions_mut().insert(claims);
-                Ok(request)
-            }
-            Err(_) => {
-                let error =
-                    ProblemDetails::unauthorized("User validation failed".to_string()).into();
-                Err((error, request))
-            }
-        }
-        */
 
         Ok(request)
     }

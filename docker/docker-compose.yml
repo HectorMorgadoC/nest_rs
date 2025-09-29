@@ -1,0 +1,16 @@
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    ports:
+      - "0.0.0.0:3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: nestrs_20989862
+      MYSQL_DATABASE: nestrs
+      MYSQL_USER: nest_user
+      MYSQL_PASSWORD: nestrs_20989862
+    container_name: NESTRSQL
+    volumes:
+      - mysql_data:/var/lib/mysql
+volumes:
+  mysql_data:

@@ -1,5 +1,5 @@
 use crate::app::shared::{
-    contract::contract::MiddlewareUserValidator, state::state::state::AppState,
+    contract::contract::MiddlewareUserValidator, state::state::app_state::AppState,
 };
 use actix_web::web;
 use std::sync::Arc;
@@ -19,7 +19,7 @@ pub fn configure_routes(cfg: &mut web::ServiceConfig) {
 }
 
 pub fn configure_providers(cfg: &mut web::ServiceConfig, app_state: web::Data<AppState>) {
-    let repository: Repository = Repository::new(app_state.db.clone());
+    let repository: Repository = Repository::new(app_state.database_diesel.clone());
     let service: Service = Service::new(repository);
     cfg.app_data(web::Data::new(service.clone()));
     configure_middleware_dependencies(cfg, service);
