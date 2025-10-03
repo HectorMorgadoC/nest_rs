@@ -21,4 +21,5 @@ thiserror = "2.0.16"
 uuid = { version = "1", features = ["v4","serde"] }
 validator = { version = "0.20.0", features = ["derive"] }
 sqlx = { version = "0.8.6", features = ["runtime-tokio-rustls","mysql","uuid","macros"] }
+mongodb = "3.3.0"
 

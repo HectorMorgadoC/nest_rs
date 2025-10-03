@@ -9,6 +9,7 @@ use actix_files::Files;
 use actix_web::{App, HttpServer, web};
 use app::shared::database::{
     diesel::diesel::connection as connection_diesel,
+    mongo::mongo_db::connection as connection_mongo,
     sqlx_mysql::sqlx::connection as connection_sqlx,
 };
 
@@ -21,11 +22,16 @@ async fn main() -> io::Result<()> {
     let env_address: &str = &var_env.get_or("ADDRESS", "127.0.0.1");
     let url_database_diesel = var_env.get("DATABASE_URL").unwrap();
     let url_database_sqlx = var_env.get("DATABASE_URL_MYSQL").unwrap();
+    let url_database_mongo = var_env.get("MONGO_URI").unwrap();
+    let client_mongo = "client_db".to_string();
     let database_connection_diesel = connection_diesel(url_database_diesel);
     let database_connection_sqlx = connection_sqlx(url_database_sqlx).await;
+    let database_connection_mongo =
+        connection_mongo(url_database_mongo.to_string(), &client_mongo).await;
     let app_data = web::Data::new(AppState {
         database_diesel: database_connection_diesel,
         database_sqlx: database_connection_sqlx,
+        database_mongo: database_connection_mongo,
     });
 
     let server = HttpServer::new(move || {

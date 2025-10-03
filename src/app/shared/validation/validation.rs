@@ -7,7 +7,7 @@ pub mod validation_request {
     use validator::Validate;
 
     /// Generic wrapper for validated HTTP requests
-    #[derive(Debug)]
+    #[derive(Debug, Clone)]
     pub struct ValidatedRequest<T>(pub T);
 
     impl<T> ValidatedRequest<T> {
